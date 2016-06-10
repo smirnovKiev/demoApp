@@ -153,7 +153,7 @@ define([
             var limit = collection.length - 1;
 
             for(var index = 0; index < limit; index += 1) {
-                $container.append(this.userTemplate({ user: collection[index], counter: index + 1 }));
+                $container.append(this.userTemplate({ user: collection[index] }));
             }
         },
 
