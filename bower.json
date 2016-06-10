@@ -1,0 +1,28 @@
+{
+  "name": "LullabyShop",
+  "description": "",
+  "main": "",
+  "authors": [
+    "'Smirnov <'smiranton.kiev@gmail.com'>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/smirAnton/LullabyShop",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/js/libs/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^2.2.2",
+    "requirejs": "^2.2.0",
+    "text": "^2.0.14",
+    "moment": "^2.13.0",
+    "toastr": "^2.1.2",
+    "bootstrap": "^3.3.6",
+    "backbone": "^1.3.2"
+  }
+}

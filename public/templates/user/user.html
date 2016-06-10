@@ -1,0 +1,37 @@
+<tr data-id="<%= user.objectId %>">
+    <!--<td data-id="<%= user.objectId %>" name="avatar" class="userAvatar">-->
+        <!--<span class="showElem"><img src="<%= user.avatar %>" id="avatar" /></span>-->
+    <!--</td>-->
+
+    <td><%= counter %></td>
+
+    <td data-id="<%= user.objectId %>" name="name" class="userProps">
+        <span class="showElem"><%= user.name  %></span>
+        <span class="hideElem"><input class="userProps" type="text" id="name" /></span>
+    </td>
+
+    <td data-id="<%= user.objectId %>" name="lastName" class="userProps">
+        <span class="showElem"><%= user.lastName  %></span>
+        <span class="hideElem"><input class="userProps" type="text" id="lastName" /></span>
+    </td>
+
+    <td data-id="<%= user.objectId %>" name="gender" class="userProps">
+        <span class="showElem"><%= user.gender  %></span>
+        <span class="hideElem"><input class="userProps" type="text" id="gender" /></span>
+    </td>
+
+    <td data-id="<%= user.objectId %>" name="email" class="userProps">
+        <span class="showElem"><%= user.email  %></span>
+        <span class="hideElem"><input class="userProps" type="text" id="email" /></span>
+    </td>
+    <!--<td>-->
+        <!--<input type="file" multiple data-id="<%= user.objectId %>" />-->
+        <!--<input type="button" class="uploadFile" value="Upload file" />-->
+    <!--</td>-->
+    <td>
+        <input type="button" class="editBtn" class="btn btn-default" data-id="<%= user.objectId %>" value="Edit" />
+    </td>
+    <td>
+        <input type="button" class="removeBtn" class="btn btn-default" data-id="<%= user.objectId %>" value="Remove" />
+    </td>
+</tr>
