@@ -15,32 +15,41 @@ define([
             'app/users'          : 'onUsers',
             'app/chat'           : 'onChat',
             // 'app/category/:title': 'onCategory',
-            '*any'               : 'default'
+            '*any'     : 'default'
         },
 
-        onHome: function () {
+        onHomeRout: function () {
+            var dataQuery = new Backendless.DataQuery();
             var self = this;
-            var UserModel = Models.User;
-            var dataQuery = {
-                options : { pageSize : 50, sortBy: ['name'] }
-            };
+            var UserModel;
 
-            Backendless.Persistence.of(UserModel)
-                .find(dataQuery)
-                .then(function (response) {
-                    require(['views/user/userList'], function (WrapperView) {
-                        var userList = response.data;
-                        var userCollection;
-                        var UserCollection = Backbone.Collection.extend({
-                            model: Backbone.Model.extend({
-                                'idAttribute': 'objectId'
-                            })
+            if (APP.authorized) {
+                UserModel = Models.User;
+                dataQuery.options = {pageSize: 50, sortBy: ['name']};
+
+                Backendless.Persistence.of(UserModel)
+                    .find(dataQuery)
+                    .then(function (response) {
+                        require(['views/user/userList'], function (WrapperView) {
+                            var userList = response.data;
+                            var UserCollection;
+                            var userCollection;
+
+                            UserCollection = Backbone.Collection.extend({
+                                model: Backbone.Model.extend({
+                                    'idAttribute': 'objectId'
+                                })
+                            });
+
+                            userCollection = new UserCollection(userList);
+
+                            self.view ? self.view.undelegateEvents() : null;
+                            $('#header').show();
+                            self.view = new WrapperView({collection: userCollection});
                         });
-
-                        userCollection = new UserCollection(userList);
-
-                        self.view ? self.view.undelegateEvents() : null;
-                        self.view = new WrapperView({collection: userCollection});
+                    })
+                    .catch(function (err) {
+                        APP.handleError(err);
                     });
                 })
                 .catch(function (err) {
@@ -58,9 +67,14 @@ define([
 
                 self.view = new WrapperView();
             });
+
+
+            } else {
+                Backbone.history.navigate('#app/login', {trigger: true});
+            }
         },
 
-        onLogin: function () {
+        onLoginRout: function () {
             var self = this;
 
             require(['views/login/login'], function (WrapperView) {
@@ -119,7 +133,7 @@ define([
         // },
 
         default: function () {
-            Backbone.history.navigate('#app/home', { trigger: true });
+            Backbone.history.navigate('#app/home', {trigger: true});
         }
     });
 });

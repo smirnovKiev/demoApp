@@ -9,50 +9,90 @@ define([
     'views/header/header'
 ], function (Router, Backbone, messenger, _, Backendless, HeaderView) {
 
-    function init() {
-        Backendless.UserService.getCurrentUser()
+    function initialize() {
+
+        APP.navigate = function (url) {
+            Backbone.history.navigate(url, {trigger: true});
+        };
+
+        APP.successNotification = function (message) {
+            messenger.alert('success', message);
+        };
+
+        APP.warningNotification = function (message) {
+            messenger.alert('warning', message);
+        };
+
+        APP.handleError = function (err) {
+            messenger.alert('error', err.message);
+        };
+
+        new HeaderView;
+        APP.router = new Router();
+
+        Backbone.View.prototype.letsUploadFile = function (f, d, cb) {
+            var fileImage = f;
+            var folder = 'files';
+            var onComplete;
+
+            if (typeof d === 'function') {
+                onComplete = d;
+            } else {
+                folder = d ? d : folder;
+                onComplete = (typeof cb === 'function') ? cb : function (er, rs) {
+                    if (er) {
+                        return console.log(er);
+                    }
+                    console.log(rs);
+                };
+            }
+
+            if (fileImage) {
+                Backendless.Files.upload(fileImage, folder, true, new Backendless.Async(
+                    function (result) {
+                        onComplete(null, result);
+                    },
+                    function (err) {
+                        onComplete(err);
+                    }
+                ))
+            } else {
+                onComplete(null, null)
+            }
+        };
+
+        Backbone.history.start({silent: true});
+
+
+        Backendless.UserService
+            .getCurrentUser()
             .then(function (user) {
-                var url;
+                var url = Backbone.history.fragment || 'home';
 
-                APP.channel = _.extend({ }, Backbone.Events);
-                APP.router = new Router({channel : APP.channel});
+                if (Backbone.history.fragment) {
+                    Backbone.history.fragment = ''
+                }
 
-                Backbone.history.start({silent: true});
+                if (user && user.objectId) {
+                    APP.authorized = true;
+                    APP.userId = user.objectId;
 
-                user ? APP.loggedIn = true : APP.loggedIn = false;
+                    $('body').addClass('header');
+                    Backbone.history.navigate(url, {trigger: true});
+                } else {
+                    APP.authorized = false;
+                    APP.userId = null;
 
-                url = Backbone.history.fragment = '' || 'home';
-
-                new HeaderView();
-                
-                var $header = $('#header');
-
-                APP.loggedIn ? $header.slideDown() : url = '#app/login';
-
-                Backbone.history.navigate(url, { trigger: true });
+                    $('body').removeClass('header');
+                    Backbone.history.navigate('login', {trigger: true});
+                }
             })
             .catch(function (err) {
                 APP.handleError(err);
             });
-
-        APP.navigate = function(url) {
-            Backbone.history.navigate(url, { trigger: true });
-        };
-
-        APP.successNotification = function(message) {
-            messenger.alert('success', message);
-        };
-
-        APP.warningNotification = function(message) {
-            messenger.alert('warning', message);
-        };
-
-        APP.handleError = function(err) {
-            messenger.alert('error', err.message);
-        };
     }
 
     return {
-        initialize: init
+        initialize: initialize
     }
 });

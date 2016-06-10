@@ -18,15 +18,15 @@ define([
         },
 
         events: {
-            'click #register-form-link': 'onRegisterForm',
-            'click #recovery-form-link': 'onRecoveryForm',
-            'click #login-form-link'   : 'onLoginForm',
-            'click #register-submit'   : 'onRegister',
-            'click #recovery-submit'   : 'onRecovery',
-            'click #login-submit'      : 'onLogin'
+            'click #register-form-link': 'letsShowRegisterForm',
+            'click #recovery-form-link': 'letsShowRecoveryForm',
+            'click #login-form-link'   : 'letsShowLoginForm',
+            'click #register-submit'   : 'letsRegister',
+            'click #recovery-submit'   : 'letsRecovery',
+            'click #login-submit'      : 'letsLogin'
         },
 
-        onRegisterForm: function (e) {
+        letsShowRegisterForm: function (e) {
             e.preventDefault();
             var $container = this.$container;
 
@@ -39,7 +39,7 @@ define([
             });
         },
 
-        onRecoveryForm: function (e) {
+        letsShowRecoveryForm: function (e) {
             e.preventDefault();
             var $container = this.$container;
 
@@ -50,7 +50,7 @@ define([
             });
         },
 
-        onLoginForm: function (e) {
+        letsShowLoginForm: function (e) {
             e.preventDefault();
             var $container = this.$container;
 
@@ -63,9 +63,11 @@ define([
             });
         },
 
-        onRegister: function (e) {
+        letsRegister: function (e) {
             e.stopPropagation();
+            e.preventDefault();
 
+            var self = this;
             var $regContainer = this.$container.find('#register-form');
 
             var confPass = $regContainer.find('#confPassword').val().trim();
@@ -76,7 +78,6 @@ define([
             var fail;
 
             if (fail = validator.isUsername(name)                   ||
-                       validator.isPhone(phone)                     ||
                        validator.isEmail(email)                     ||
                        validator.isPassword(pass)                   ||
                        validator.isPassword(confPass)               ||
@@ -93,13 +94,16 @@ define([
             Backendless.UserService.register(user)
                 .then(function (user) {
                     APP.successNotification(user.name + ', you have successfully registered!');
+                    self.$container.find('#register-form').slideUp(300, function () {
+                        self.$container.find('#login-form').slideDown(300);
+                    });
                 })
                 .catch(function (err) {
                     APP.handleError(err);
                 });
         },
 
-        onRecovery: function (e) {
+        letsRecovery: function (e) {
             e.stopPropagation();
             e.preventDefault();
 
@@ -124,7 +128,7 @@ define([
                 })
         },
 
-        onLogin: function (e) {
+        letsLogin: function (e) {
             e.stopPropagation();
             e.preventDefault();
 
@@ -142,7 +146,10 @@ define([
             Backendless.UserService.login(login, password, rememberMe)
                 .then(function (user) {
                     APP.successNotification(user.name + ', welcome to our site!');
-                    APP.navigate('#app/home');
+                    APP.authorized = true;
+                    APP.userId = user.objectId;
+
+                    Backbone.history.navigate('#app/home', {trigger: true});
                 })
                 .catch(function (err) {
                     APP.handleError(err);
