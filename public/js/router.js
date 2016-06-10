@@ -13,6 +13,7 @@ define([
             'app/home'           : 'onHome',
             'app/login'          : 'onLogin',
             'app/users'          : 'onUsers',
+            'app/chat'           : 'onChat',
             // 'app/category/:title': 'onCategory',
             '*any'               : 'default'
         },
@@ -45,6 +46,18 @@ define([
                 .catch(function (err) {
                     APP.handleError(err);
                 });
+        },
+
+        onChat: function () {
+            var self = this;
+
+            require(['views/chat/chat'], function (WrapperView) {
+                if(self.view){
+                    self.view.undelegateEvents();
+                }
+
+                self.view = new WrapperView();
+            });
         },
 
         onLogin: function () {
